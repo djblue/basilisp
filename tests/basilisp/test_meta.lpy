@@ -1,0 +1,20 @@
+(ns tests.basilisp.test-meta
+  (:require
+   [basilisp.test :refer [are deftest is testing]]))
+
+(deftest preserve-metadata
+  (let [m {:my :meta}]
+    (testing "conj preserves metadata"
+      (are [coll x]
+           (= m (meta (conj (with-meta coll m) x)))
+        (list) :v
+        [] :v
+        #{} :v
+        {} [:k :v]))
+    (testing "empty preserves metadata"
+      (are [coll]
+           (= m (meta (empty (with-meta coll m))))
+        (list)
+        []
+        #{}
+        {}))))
