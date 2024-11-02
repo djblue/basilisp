@@ -833,6 +833,8 @@
       (is (= 6 (reduce (f) (range))))
       (is (= 9 (reduce (f) 6 (range)))))))
 
+(defrecord MyRecord [a b c])
+
 (deftest reduce-kv-test
   (testing "reduce-kv does not execute f if no elems in coll"
     (let [a (atom false)]
@@ -864,7 +866,17 @@
                    (update :ks conj i)
                    (update :vs conj v)))
              {:ks [] :vs []}
-             [:a :b :c])))))
+             [:a :b :c]))))
+
+  (testing "works on records as well"
+    (is (= {:ks #{:a :b :c} :vs #{0 1 2}}
+           (reduce-kv
+             (fn [acc k v]
+               (-> acc
+                   (update :ks conj k)
+                   (update :vs conj v)))
+             {:ks #{} :vs #{}}
+             (->MyRecord 0 1 2))))))
 
 (deftest fnil-test
   (let [f (fnil (fn [x] x) :yes)]
